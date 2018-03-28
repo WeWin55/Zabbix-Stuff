@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>3.4</version>
+    <date>2018-03-28T11:36:30Z</date>
+    <groups>
+        <group>
+            <name>Templates</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Template App Web Scenario</template>
+            <name>Template App Web Scenario</name>
+            <description>{$WEB_SCENARIO} Makro auf die Website setzen.&#13;
+zb:&#13;
+&#13;
+{$WEB_SCENARIO} https://example.com/testsite/</description>
+            <groups>
+                <group>
+                    <name>Templates</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>Web-Scenario</name>
+                </application>
+            </applications>
+            <items/>
+            <discovery_rules/>
+            <httptests>
+                <httptest>
+                    <name>{$WEB_SCENARIO}</name>
+                    <application>
+                        <name>Web-Scenario</name>
+                    </application>
+                    <delay>1m</delay>
+                    <attempts>1</attempts>
+                    <agent>Zabbix_Web_Monitoring</agent>
+                    <http_proxy/>
+                    <variables/>
+                    <headers/>
+                    <status>0</status>
+                    <authentication>0</authentication>
+                    <http_user/>
+                    <http_password/>
+                    <verify_peer>0</verify_peer>
+                    <verify_host>0</verify_host>
+                    <ssl_cert_file/>
+                    <ssl_key_file/>
+                    <ssl_key_password/>
+                    <steps>
+                        <step>
+                            <name>{$WEB_SCENARIO}</name>
+                            <url>{$WEB_SCENARIO}</url>
+                            <query_fields/>
+                            <posts/>
+                            <variables/>
+                            <headers/>
+                            <follow_redirects>1</follow_redirects>
+                            <retrieve_mode>0</retrieve_mode>
+                            <timeout>15s</timeout>
+                            <required/>
+                            <status_codes>200</status_codes>
+                        </step>
+                    </steps>
+                </httptest>
+            </httptests>
+            <macros/>
+            <templates/>
+            <screens/>
+        </template>
+    </templates>
+    <triggers>
+        <trigger>
+            <expression>{Template App Web Scenario:web.test.fail[{$WEB_SCENARIO}].last(#3)}&gt;0</expression>
+            <recovery_mode>0</recovery_mode>
+            <recovery_expression/>
+            <name>Website Error on {$WEB_SCENARIO}  {HOST.DNS}</name>
+            <correlation_mode>0</correlation_mode>
+            <correlation_tag/>
+            <url/>
+            <status>0</status>
+            <priority>2</priority>
+            <description/>
+            <type>0</type>
+            <manual_close>0</manual_close>
+            <dependencies/>
+            <tags/>
+        </trigger>
+    </triggers>
+</zabbix_export>
