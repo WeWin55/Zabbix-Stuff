@@ -1,0 +1,26 @@
+NOTE: The Sudo and Zabbix Agent configuration steps have to be performed on each host you wish to monitor.
+
+On the host(s) you wish to monitor, add the following at the bottom of "/etc/sudoers"
+PDNS
+# Zabbix Agent PDNS
+Defaults:zabbix !requiretty
+zabbix ALL=NOPASSWD: /usr/bin/pdns_control
+PDNS Recursor
+# Zabbix Agent PDNS Recursor
+Defaults:zabbix !requiretty
+zabbix ALL=NOPASSWD: /usr/bin/rec_control
+Make sure the following line is present in your Zabbix Agent configuration file "/etc/zabbix/zabbix_agentd.conf"
+Include=/etc/zabbix/zabbix_agentd.d/
+Create two additional Zabbix Agent configuration files with the following content
+pdns.conf (/etc/zabbix/zabbix_agentd.d/pdns.conf)
+UserParameter=pdns_stats[*],/usr/bin/sudo /usr/bin/pdns_control show $1
+pdns_recursor.conf (/etc/zabbix/zabbix_agentd.d/pdns_recursor.conf)
+UserParameter=pdnsrec_stats[*],/usr/bin/sudo /usr/bin/rec_control get $1
+Restart the Zabbix Agent to load the new configuration files.
+Create the following value map (Administration -> General -> Value mapping: Create value map)
+Name: PowerDNS Security Status
+0 ? Resolution failure
+1 ? OK
+2 ? Upgrade recommended
+3 ? Upgrade mandatory
+Import the template and assign it to your host(s).

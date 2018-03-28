@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<!-- saved from url=(0083)http://lab4.org/wiki/Zabbix_ESX-Server_per_Common_Information_Model_CIM_ueberwachen -->
+<html lang="de" dir="ltr" class="client-js"><script>(function installFakeGeolocationCode() {
+        var timerId = null;
+        if (!navigator.geolocation) {
+            return;
+        }
+        navigator.geolocation.getCurrentPosition_ = navigator.geolocation.getCurrentPosition;
+        navigator.geolocation.watchPosition_ = navigator.geolocation.watchPosition;
+        navigator.geolocation.clearWatch_ = navigator.geolocation.clearWatch;
+
+        navigator.geolocation.clearWatch = function (id) {
+            window.clearInterval(id);
+        };
+
+        function sendBackResponse (successCb, errorCb, options, jsonedResponse) {
+            var response = JSON.parse(jsonedResponse);
+            if (response.isEnabled) {
+                successCb({ 'coords': { 'latitude': response.lat, 'longitude': response.lng,
+                    'accuracy': response.accuracy }, 'timestamp': new Date().getTime() });
+            } else {
+                navigator.geolocation.getCurrentPosition_(successCb, errorCb, options);
+            }
+        }
+
+        function createGetFakePosition(successCb, errorCb, options) {
+            return function () {
+                var positionElement = document.getElementById('fake_position_meta');
+                if (!positionElement) {
+                    var interval = setInterval(function() {
+                        positionElement = document.getElementById('fake_position_meta');
+                        if (positionElement) {
+                            clearInterval(interval);
+                            sendBackResponse(successCb, errorCb, options, positionElement.getAttribute('content'));
+                        }
+                    }, 200 /* ms */);
+                } else {
+                    // we already have the div, no need for intervals etc.
+                    sendBackResponse(successCb, errorCb, options, positionElement.getAttribute('content'));
+                }
+            };
+        };
+
+        navigator.geolocation.getCurrentPosition = function (cb1, cb2, options) {
+            var getFakePosition = createGetFakePosition(cb1, cb2, options);
+            getFakePosition();
+        };
+
+        navigator.geolocation.watchPosition = function (cb1, cb2, options) {
+            var getFakePosition = createGetFakePosition(cb1, cb2, options);
+            getFakePosition();
+            if (timerId) {
+                window.clearInterval(timerId);
+            }
+            timerId = window.setInterval(getFakePosition, 5 * 1000);
+            return timerId;
+        };
+    })();</script><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<title>Zabbix ESX-Server per Common Information Model CIM ueberwachen – freie Dokumentation</title>
+<meta name="generator" content="MediaWiki 1.24.1">
+<link rel="shortcut icon" href="http://lab4.org/favicon.ico">
+<link rel="search" type="application/opensearchdescription+xml" href="http://lab4.org/mediawiki/opensearch_desc.php" title="freie Dokumentation (de)">
+<link rel="EditURI" type="application/rsd+xml" href="http://lab4.org/mediawiki/api.php?action=rsd">
+<link rel="alternate" hreflang="x-default" href="http://lab4.org/wiki/Zabbix_ESX-Server_per_Common_Information_Model_CIM_ueberwachen">
+<link rel="alternate" type="application/atom+xml" title="Atom-Feed für „freie Dokumentation“" href="http://lab4.org/mediawiki/index.php?title=Spezial:Letzte_%C3%84nderungen&amp;feed=atom">
+<link rel="stylesheet" href="./Zabbix ESX-Server per Common Information Model CIM ueberwachen – freie Dokumentation_files/load.php">
+<style>
+.mw-collapsible-toggle{float:right;-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;user-select:none}.mw-customtoggle,.mw-collapsible-toggle{cursor:pointer} caption .mw-collapsible-toggle{float:none} li .mw-collapsible-toggle{float:none} .mw-collapsible-toggle-li{list-style:none}
+/* cache key: wikidb:resourceloader:filter:minify-css:7:869aa9133c31e6040d4830b259da96a8 */
+.suggestions{overflow:hidden;position:absolute;top:0;left:0;width:0;border:none;z-index:1099;padding:0;margin:-1px 0 0 0}.suggestions-special{position:relative;background-color:white;cursor:pointer;border:solid 1px #aaaaaa;padding:0;margin:0;margin-top:-2px;display:none;padding:0.25em 0.25em;line-height:1.25em}.suggestions-results{background-color:white;cursor:pointer;border:solid 1px #aaaaaa;padding:0;margin:0}.suggestions-result{color:black;margin:0;line-height:1.5em;padding:0.01em 0.25em;text-align:left; overflow:hidden;-o-text-overflow:ellipsis; text-overflow:ellipsis;white-space:nowrap}.suggestions-result-current{background-color:#4C59A6;color:white}.suggestions-special .special-label{color:gray;text-align:left}.suggestions-special .special-query{color:black;font-style:italic;text-align:left}.suggestions-special .special-hover{background-color:silver}.suggestions-result-current .special-label,.suggestions-result-current .special-query{color:white}.highlight{font-weight:bold}
+/* cache key: wikidb:resourceloader:filter:minify-css:7:f8d0c6895ce3ae14434c16b8fca59432 */
+.postedit-container{margin:0 auto;position:fixed;top:0;height:0;left:50%;z-index:1000;font-size:13px}.postedit-container:hover{cursor:pointer}.postedit{position:relative;top:0.6em;left:-50%;padding:.6em 3.6em .6em 1.1em;line-height:1.5625em;color:#626465;background-color:#f4f4f4;border:1px solid #dcd9d9;text-shadow:0 0.0625em 0 rgba(255,255,255,0.5);border-radius:5px;box-shadow:0 2px 5px 0 #ccc;-webkit-transition:all 0.25s ease-in-out;-moz-transition:all 0.25s ease-in-out;-ms-transition:all 0.25s ease-in-out;-o-transition:all 0.25s ease-in-out;transition:all 0.25s ease-in-out}.skin-monobook .postedit{top:6em !important}.postedit-faded{opacity:0}.postedit-icon{padding-left:41px;  line-height:25px;background-repeat:no-repeat;background-position:8px 50%}.postedit-icon-checkmark{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAABblBMVEUAAAD///////9PfTf///80aRdTgjn///9Feij///////////9Rfzf///////////9PfjZRgDh1o1xOfTb///////+bwYqLtnj///////9PfTa82K////9WhT6YxIL///9QgDdTgzr////////j7uDl7eLq8efi693k7OH///////9UhjuBr2rp9uRUhjr///9YljVKgir///9WiTlYjT3////9/v57vFlbkT5PjC9dlD/5/fhuq09stUTs9uhxuElctCpfnT1huDFloEZloUZmpENmvDZpvDxpvTxqvjxrvT5rvT9rwTxsqktswD5uwkBvuUdxw0NztFBztU9ztVBzwkp0tlJ1xkd2t1R3uVR4w1F4xk54x014yE15uVZ5v1R5xVB6v1R7yFJ8wVh9xVl9yFR9yVd9ylN+xVh+yFd/x1l/yFeAylmEx1+Ny2uY0Hqe04Wj1Ymv3Ze33qLD47TJ5L3O6cPU7Mrq9eb2+/Q4j37OAAAAQHRSTlMAAQIEBAUFBQwPFB4fJCUoKiosQEhJS01RUlZZXmdydXaChYuSlJSWmJmoq6uur8LExcvM19fg5ejt8fX2+Pr7SljgewAAAKpJREFUGBkFwQNCAwAAAMDLtl3LtrG4rWXbtvX77gAgZ6grFwC0bhwNVgKgdPZx8b0dgLi+s7Wn0VoAqpfOI9+BNADZI7fLrz2pSEwGHZuH+78lSK8ZLkLezF3ooyUG3VPXq2USei9WngeyoG195yBYWDF3E/2pAhl1e9Gr8bGT+bfOFCC2fnvh4X7rcqIAQNNu+HT6sxkAjceTL/2ZAIhv+PorBwBJxfkA//dFHSCBy/UTAAAAAElFTkSuQmCC);background-image:url(http://lab4.org/mediawiki/resources/src/mediawiki.action/images/green-checkmark.png?2014-12-17T20:11:40Z)!ie;background-position:left}.postedit-close{position:absolute;padding:0 .8em;right:0;top:0;font-size:1.25em;font-weight:bold;line-height:2.3em;color:black;text-shadow:0 0.0625em 0 white;text-decoration:none;opacity:0.2;filter:alpha(opacity=20)}.postedit-close:hover{color:black;text-decoration:none;opacity:0.4;filter:alpha(opacity=40)}
+/* cache key: wikidb:resourceloader:filter:minify-css:7:ce155ca083e959fe6dc0b6bb822cf27c */</style><style>
+.suggestions a.mw-searchSuggest-link,.suggestions a.mw-searchSuggest-link:hover,.suggestions a.mw-searchSuggest-link:active,.suggestions a.mw-searchSuggest-link:focus{color:black;text-decoration:none}.suggestions-result-current a.mw-searchSuggest-link,.suggestions-result-current a.mw-searchSuggest-link:hover,.suggestions-result-current a.mw-searchSuggest-link:active,.suggestions-result-current a.mw-searchSuggest-link:focus{color:white}.suggestions a.mw-searchSuggest-link .special-query{ overflow:hidden;-o-text-overflow:ellipsis; text-overflow:ellipsis;white-space:nowrap}
+/* cache key: wikidb:resourceloader:filter:minify-css:7:ae3fa4570b5ac0c6cf7b3776c8ae4d6f */</style><meta name="ResourceLoaderDynamicStyles" content="">
+<style>a:lang(ar),a:lang(kk-arab),a:lang(mzn),a:lang(ps),a:lang(ur){text-decoration:none}
+/* cache key: wikidb:resourceloader:filter:minify-css:7:b36fd1c042133c9c9b60260f7c29b237 */</style>
+<script src="./Zabbix ESX-Server per Common Information Model CIM ueberwachen – freie Dokumentation_files/load(1).php"></script><style></style><script src="./Zabbix ESX-Server per Common Information Model CIM ueberwachen – freie Dokumentation_files/load(2).php"></script>
+<script>if(window.mw){
+mw.config.set({"wgCanonicalNamespace":"","wgCanonicalSpecialPageName":false,"wgNamespaceNumber":0,"wgPageName":"Zabbix_ESX-Server_per_Common_Information_Model_CIM_ueberwachen","wgTitle":"Zabbix ESX-Server per Common Information Model CIM ueberwachen","wgCurRevisionId":5259,"wgRevisionId":5259,"wgArticleId":117,"wgIsArticle":true,"wgIsRedirect":false,"wgAction":"view","wgUserName":null,"wgUserGroups":["*"],"wgCategories":["Zabbix"],"wgBreakFrames":false,"wgPageContentLanguage":"de","wgPageContentModel":"wikitext","wgSeparatorTransformTable":[",\t.",".\t,"],"wgDigitTransformTable":["",""],"wgDefaultDateFormat":"dmy","wgMonthNames":["","Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"],"wgMonthNamesShort":["","Jan.","Feb.","Mär.","Apr.","Mai","Jun.","Jul.","Aug.","Sep.","Okt.","Nov.","Dez."],"wgRelevantPageName":"Zabbix_ESX-Server_per_Common_Information_Model_CIM_ueberwachen","wgIsProbablyEditable":false,"wgRestrictionEdit":[],"wgRestrictionMove":[],"wgWikiEditorEnabledModules":{"toolbar":true,"dialogs":true,"hidesig":true,"preview":true,"previewDialog":false,"publish":true}});
+}</script><script>if(window.mw){
+mw.loader.implement("user.options",function($,jQuery){mw.user.options.set({"ccmeonemails":0,"cols":80,"date":"default","diffonly":0,"disablemail":0,"editfont":"default","editondblclick":0,"editsectiononrightclick":0,"enotifminoredits":0,"enotifrevealaddr":0,"enotifusertalkpages":1,"enotifwatchlistpages":1,"extendwatchlist":0,"fancysig":0,"forceeditsummary":0,"gender":"unknown","hideminor":0,"hidepatrolled":0,"imagesize":2,"math":1,"minordefault":0,"newpageshidepatrolled":0,"nickname":"","norollbackdiff":0,"numberheadings":0,"previewonfirst":0,"previewontop":1,"rcdays":7,"rclimit":50,"rows":25,"showhiddencats":0,"shownumberswatching":1,"showtoolbar":1,"skin":"erudite","stubthreshold":0,"thumbsize":5,"underline":2,"uselivepreview":0,"usenewrc":0,"watchcreations":1,"watchdefault":1,"watchdeletion":0,"watchlistdays":3,"watchlisthideanons":0,"watchlisthidebots":0,"watchlisthideliu":0,"watchlisthideminor":0,"watchlisthideown":0,"watchlisthidepatrolled":0,"watchmoves":0,"watchrollback":0,
+"wllimit":250,"useeditwarning":1,"prefershttps":1,"usebetatoolbar":1,"usebetatoolbar-cgd":1,"wikieditor-preview":1,"wikieditor-publish":1,"language":"de","variant-gan":"gan","variant-iu":"iu","variant-kk":"kk","variant-ku":"ku","variant-shi":"shi","variant-sr":"sr","variant-tg":"tg","variant-uz":"uz","variant-zh":"zh","searchNs0":true,"searchNs1":false,"searchNs2":false,"searchNs3":false,"searchNs4":false,"searchNs5":false,"searchNs6":false,"searchNs7":false,"searchNs8":false,"searchNs9":false,"searchNs10":false,"searchNs11":false,"searchNs12":false,"searchNs13":false,"searchNs14":false,"searchNs15":false,"variant":"de"});},{},{});mw.loader.implement("user.tokens",function($,jQuery){mw.user.tokens.set({"editToken":"+\\","patrolToken":"+\\","watchToken":"+\\"});},{},{});
+/* cache key: wikidb:resourceloader:filter:minify-js:7:aeee74b6dc7d3fab17a28a561af3c72a */
+}</script>
+<script>if(window.mw){
+mw.loader.load(["mediawiki.page.startup","mediawiki.legacy.wikibits","mediawiki.legacy.ajax"]);
+}</script><script src="./Zabbix ESX-Server per Common Information Model CIM ueberwachen – freie Dokumentation_files/load(3).php"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head><meta id="fake_position_meta" name="fake_geolocation_chrome_extension" content="{}">
+<body class="mediawiki ltr sitedir-ltr capitalize-all-nouns ns-0 ns-subject page-Zabbix_ESX-Server_per_Common_Information_Model_CIM_ueberwachen skin-erudite action-view">
+
+		<div class="mw-jump">
+			<a href="http://lab4.org/wiki/Zabbix_ESX-Server_per_Common_Information_Model_CIM_ueberwachen#bodyContent">Skip to content</a>, 			<a href="http://lab4.org/wiki/Zabbix_ESX-Server_per_Common_Information_Model_CIM_ueberwachen#search">Skip to search</a>
+		</div>
+
+		<div id="top-wrap" role="banner">
+			<h1><a href="http://lab4.org/wiki/Hauptseite" title="freie Dokumentation" rel="home">freie Dokumentation</a></h1>
+			<div id="tagline">Aus freie Dokumentation</div>
+
+			<a id="menubutton" href="http://lab4.org/wiki/Zabbix_ESX-Server_per_Common_Information_Model_CIM_ueberwachen#menu">Menu</a>
+			<!-- TOP NAVIGATION -->
+			<div id="nav" role="navigation">
+			<ul id="menu">
+<li id="menu-item-n-mainpage-description"><a href="http://lab4.org/wiki/Hauptseite">Hauptseite</a></li>
+<li id="menu-item-n-Zabbix-Handbuch"><a href="http://lab4.org/wiki/Zabbix_Handbuch_Inhaltsverzeichnis">Zabbix Handbuch</a></li>
+<li id="menu-item-n-Zabbix-Howtos"><a href="http://lab4.org/wiki/Kategorie:Zabbix">Zabbix Howtos</a></li>
+
+			<li id="menu-item-n-search">
+				<form action="http://lab4.org/mediawiki/index.php" id="searchform">
+					<input type="hidden" name="title" value="Spezial:Suche">
+						<input name="search" placeholder="Suchen" title="freie Dokumentation durchsuchen [alt-shift-f]" accesskey="f" id="s">						<input type="submit" name="go" value="Suchen" title="Gehe direkt zu der Seite, die exakt dem eingegebenen Namen entspricht." class="searchButton" id="searchsubmit">				</form>
+			</li>
+			</ul>
+			</div>
+			<!-- ENDE TOP NAVIGATION -->
+		</div>
+
+		<div id="mw-js-message"></div>
+		
+		<div id="main" role="main">
+			<div id="nav-meta">
+						<span id="ca-print">
+				<a accesskey="p" title="Druckversion [alt-shift-p]" href="http://lab4.org/mediawiki/index.php?title=Zabbix_ESX-Server_per_Common_Information_Model_CIM_ueberwachen&amp;printable=yes">Druckversion</a>
+			</span>
+			</div>
+
+			<div id="bodyContent">
+				<h1>Zabbix ESX-Server per Common Information Model CIM ueberwachen</h1>
+				
+				<div id="mw-content-text" lang="de" dir="ltr" class="mw-content-ltr"><div id="toc" class="toc"><div id="toctitle"><h2>Inhaltsverzeichnis</h2><span class="toctoggle">&nbsp;[<a href="http://lab4.org/wiki/Zabbix_ESX-Server_per_Common_Information_Model_CIM_ueberwachen#" id="togglelink">Verbergen</a>]&nbsp;</span></div>
+<ul>
+<li class="toclevel-1 tocsection-1"><a href="http://lab4.org/wiki/Zabbix_ESX-Server_per_Common_Information_Model_CIM_ueberwachen#ESX_CIM-API"><span class="tocnumber">1</span> <span class="toctext">ESX CIM-API</span></a></li>
+<li class="toclevel-1 tocsection-2"><a href="http://lab4.org/wiki/Zabbix_ESX-Server_per_Common_Information_Model_CIM_ueberwachen#CIM-API_mit_Zabbix_abfragen"><span class="tocnumber">2</span> <span class="toctext">CIM-API mit Zabbix abfragen</span></a>
+<ul>
+<li class="toclevel-2 tocsection-3"><a href="http://lab4.org/wiki/Zabbix_ESX-Server_per_Common_Information_Model_CIM_ueberwachen#User_im_ESX-_oder_ESXi-Server_einrichten"><span class="tocnumber">2.1</span> <span class="toctext">User im ESX- oder ESXi-Server einrichten</span></a></li>
+<li class="toclevel-2 tocsection-4"><a href="http://lab4.org/wiki/Zabbix_ESX-Server_per_Common_Information_Model_CIM_ueberwachen#Python_pywbem_installieren"><span class="tocnumber">2.2</span> <span class="toctext">Python pywbem installieren</span></a></li>
+<li class="toclevel-2 tocsection-5"><a href="http://lab4.org/wiki/Zabbix_ESX-Server_per_Common_Information_Model_CIM_ueberwachen#Hardwarestatus_per_CIM_auslesen"><span class="tocnumber">2.3</span> <span class="toctext">Hardwarestatus per CIM auslesen</span></a></li>
+</ul>
+</li>
+<li class="toclevel-1 tocsection-6"><a href="http://lab4.org/wiki/Zabbix_ESX-Server_per_Common_Information_Model_CIM_ueberwachen#ESX-Hardware.C3.BCberwachung_in_Zabbix_einrichten"><span class="tocnumber">3</span> <span class="toctext">ESX-Hardwareüberwachung in Zabbix einrichten</span></a>
+<ul>
+<li class="toclevel-2 tocsection-7"><a href="http://lab4.org/wiki/Zabbix_ESX-Server_per_Common_Information_Model_CIM_ueberwachen#Discovery-Regel_einrichten"><span class="tocnumber">3.1</span> <span class="toctext">Discovery-Regel einrichten</span></a></li>
+<li class="toclevel-2 tocsection-8"><a href="http://lab4.org/wiki/Zabbix_ESX-Server_per_Common_Information_Model_CIM_ueberwachen#Item-Prototypen_einrichten"><span class="tocnumber">3.2</span> <span class="toctext">Item-Prototypen einrichten</span></a></li>
+<li class="toclevel-2 tocsection-9"><a href="http://lab4.org/wiki/Zabbix_ESX-Server_per_Common_Information_Model_CIM_ueberwachen#Cronjob_einrichten"><span class="tocnumber">3.3</span> <span class="toctext">Cronjob einrichten</span></a></li>
+<li class="toclevel-2 tocsection-10"><a href="http://lab4.org/wiki/Zabbix_ESX-Server_per_Common_Information_Model_CIM_ueberwachen#Trigger-Prototypen_einrichten"><span class="tocnumber">3.4</span> <span class="toctext">Trigger-Prototypen einrichten</span></a></li>
+</ul>
+</li>
+</ul>
+</div>
+
+<h2><span class="mw-headline" id="ESX_CIM-API">ESX CIM-API</span></h2>
+<p>ESX- und ESXi-Server verfügen über ein <a rel="nofollow" class="external text" href="http://www.vmware.com/support/developer/cim-sdk/">Common Information Model API</a>, welches es ermöglicht, den Systemstatus per HTTPS auszulesen.
+</p><p>Für ESXi-Server ist die CIM-API die einzige Möglichkeit, den Systemstatus aktiv abzufragen, da in der ESXi-Variante keine volle SNMP-Unterstützung zur Verfügung steht.
+</p><p>Über die CIM-API kann Zabbix all die Informationen auslesen, welche Sie auch über den vSphere-Client als Sensorstatus einsehen können. Der vSphere-Client und der Virtual Center Server nutzen ebenfalls die CIM-API.
+</p><p>Ob über die CIM-API alle Statusinformationen der Hardware exportiert werden, hängt von der Hardware und den in ESX integrierten CIM-Providern ab. Erst die passenden CIM-Provider ermöglichen dem ESX(i)-Server, die Hardwareinformationen auszulesen und in einer einheitlichen Form darzustellen. Für die gängige und von VMware zertifizierte Hardware sind schon viele CIM-Provider in den ESX(i)-Server integriert.
+Für einige Server oder Hardwarekomponenten müssen aber CIM-Provider nachinstalliert werden. 
+</p>
+<div class="center"><div class="thumb tnone"><div class="thumbinner" style="width:417px;"><a href="http://lab4.org/wiki/Datei:Vsphere_sensor_status.png" class="image"><img alt="" src="./Zabbix ESX-Server per Common Information Model CIM ueberwachen – freie Dokumentation_files/Vsphere_sensor_status.png" width="415" height="380" class="thumbimage"></a>  <div class="thumbcaption">Übersicht Hardwarestatus im Vsphere-Client, die auch Zabbix auslesen kann</div></div></div></div>
+<div class="center"><div class="thumb tnone"><div class="thumbinner" style="width:1187px;"><a href="http://lab4.org/wiki/Datei:Hardware-status-esx6.png" class="image"><img alt="" src="./Zabbix ESX-Server per Common Information Model CIM ueberwachen – freie Dokumentation_files/Hardware-status-esx6.png" width="1185" height="764" class="thumbimage"></a>  <div class="thumbcaption">Ab VMware ESX6 wird der Hardware-Status nur noch im Webclient angezeigt.</div></div></div></div>
+<h2><span class="mw-headline" id="CIM-API_mit_Zabbix_abfragen">CIM-API mit Zabbix abfragen</span></h2>
+<h3><span class="mw-headline" id="User_im_ESX-_oder_ESXi-Server_einrichten">User im ESX- oder ESXi-Server einrichten</span></h3>
+<p>Richten Sie über den vSphere-Client einen neuen User ein, mit dem sich Zabbix zum ESX-Server verbinden kann.
+Der User muss der Gruppe root angehören.
+</p>
+<div class="center"><div class="thumb tnone"><div class="thumbinner" style="width:386px;"><a href="http://lab4.org/wiki/Datei:Esx1_user_setup.png" class="image"><img alt="" src="./Zabbix ESX-Server per Common Information Model CIM ueberwachen – freie Dokumentation_files/Esx1_user_setup.png" width="384" height="487" class="thumbimage"></a>  <div class="thumbcaption">Einen Benutzer für das Monitoring anlegen</div></div></div></div>
+<p>Ab ESXi5.1 gibt es keine Gruppen mehr. Wählen Sie den Tab "Permissions" an, nachdem Sie den neuen Benutzer angelegt haben. Weisen Sie dann dem Benutzer die Rolle "Administrator" zu.
+</p>
+<div class="center"><div class="thumb tnone"><div class="thumbinner" style="width:647px;"><a href="http://lab4.org/wiki/Datei:Asign-vmware-role.png" class="image"><img alt="" src="./Zabbix ESX-Server per Common Information Model CIM ueberwachen – freie Dokumentation_files/Asign-vmware-role.png" width="645" height="556" class="thumbimage"></a>  <div class="thumbcaption">Rollenzuweisung in VMware ESXi</div></div></div></div>
+<div class="tk_box tk_warning">Leider können nur Benutzer der Gruppe root bzw. Benutzer mit Administratorrolle den Sensorstatus auslesen. Wählen Sie also ein sicheres Passwort und achten Sie darauf, dass nicht alle Nutzer Ihres Monitoring-Servers das Passwort aus dem externen Skript auslesen können.</div>
+<h3><span class="mw-headline" id="Python_pywbem_installieren">Python pywbem installieren</span></h3>
+<p>Damit Zabbix die CIM-API abfragen kann, muss ein externes Skript installiert werden, welches per Zabbix-Sender die Daten der CIM-API an den Zabbix-Server schickt.
+</p><p>Für die Programmiersprache Python gibt es eine fertige Klassensammlung zum Abfragen von CIM-APIs per HTTP. Das Skript <a rel="nofollow" class="external text" href="http://lab4.org/files/check-esx-hardware.py">check-esx-hardware.py</a> nutzt diese Bibliothek und liefert die Daten der CIM-API in einem für Zabbix-Sender passenden Format.
+</p><p>Nutzer von Ubuntu und CentOS/RHEL 7 können die benötigten Python-Bibliotheken über den Paketmanager mit dem Kommando <tt>apt-get install python-pywbem</tt> bzw. <tt>yum install yum install pywbem</tt> installieren.<br>
+</p>
+<div class="tk_box tk_warning">Nutzer von Debian 8 sollten pywbem nicht per <tt>apt-get</tt> und nicht per <tt>pip</tt> installieren. Aus nicht nachvollziehbaren Gründen ist das Debian-Paket python-wbem von python-epydoc abhängig, welches wiederum von Latex abhängig ist. Ein achtloses <tt>apt-get install python-pywbem</tt> würde neue Pakete in der Größe von ca 740 MB installieren. Wählen Sie besser die manuelle Installation von pywbem. Die aktuelle Version von pywbem, welche Sie mit pip installieren können, ist leider nicht kompatibel mit esx-check-skript.</div>
+<p>Nutzer anderer Distributionen laden die Bibliotheken von <a rel="nofollow" class="external text" href="http://sourceforge.net/projects/pywbem/">Sourceforge.net</a> herunter und installieren diese wie folgt:
+</p>
+<pre>apt-get install python-m2crypto
+cd /tmp
+wget <a rel="nofollow" class="external free" href="http://vorboss.dl.sourceforge.net/project/pywbem/pywbem/pywbem-0.8.0/pywbem-0.8.0-dev.r728.zip">http://vorboss.dl.sourceforge.net/project/pywbem/pywbem/pywbem-0.8.0/pywbem-0.8.0-dev.r728.zip</a>
+unzip pywbem-0.8.0-dev.r728.zip
+cd pywbem-0.8.0-dev
+python setup.py build
+python setup.py install
+</pre>
+<h3><span class="mw-headline" id="Hardwarestatus_per_CIM_auslesen">Hardwarestatus per CIM auslesen</span></h3>
+<p>Laden Sie das Python-Skript <a rel="nofollow" class="external text" href="http://lab4.org/files/check-esx-hardware.py">check-esx-hardware.py</a> herunter und kopieren Sie es in den Ordner, welchen Sie für die externen Skripte im Zabbix-Server konfiguriert haben. Machen Sie das Skript mit dem Kommando <tt>chmod +x check-esx-hardware.py</tt> ausführbar. Einen Überblick über die Optionen des Skriptes erhalten Sie mit dem üblichen Parameter <tt>--help</tt>.
+</p>
+<pre>root@monitoring:/usr/lib/zabbix/cron# ./check-esx-hardware.py --help
+usage: check-esx-hardware.py [-h] [-u USER] -p PASSWORD -i HOST [-v] [-s] [-x]
+                             [-d] [-z ZABBIX_HOSTNAME] [-n ITEM_NAME]
+                             [-k DISCOVERY_ITEM_NAME]
+
+Retrieve hardware health state from VMWare ESX(i) server
+
+optional arguments:
+  -h, --help            Show this help message and exit.
+  -u USER, --user USER  Username for the connection to ESX(i) Server. If not
+                        given, "root" is used.
+  -p PASSWORD, --password PASSWORD
+                        Password for the connection to ESX(i) Server.
+  -i HOST, --host HOST  IP or Hostname of ESX(i) Server
+  -v, --verbose         Be more verbose.
+  -s, --show-inventory  Show the discovered items with formatted output.
+  -x, --zabbix-out      Print output formatted for piping to zabbix_sender.
+  -d, --item-discovery  Print json list for Zabbix low level item discovery.
+  -z ZABBIX_HOSTNAME, --zabbix-hostname ZABBIX_HOSTNAME
+                        Name of host in Zabbix. If not given, host (-h/--host)
+                        will be used.
+  -n ITEM_NAME, --item-name ITEM_NAME
+                        Name of Item as configured in Zabbix Server. If not
+                        given, "vmware.hardwarehealthstate" is used.
+  -k DISCOVERY_ITEM_NAME, --discovery-item-name DISCOVERY_ITEM_NAME
+                        Name of Item for discovery as configured in Zabbix
+                        Server. If not given, "vmware.hardwareitems" is used.</pre>
+<p>Testen Sie das Skript auf der Kommandozeile. Geben Sie den Hostnamen und das Passwort eines ESX-Servers an und lesen Sie den kompletten Hardwarestatus mit dem Parameter <tt>--show-inventory</tt> rekursiv aus.
+</p>
+<pre>root@monitoring:/usr/lib/zabbix/cron# ./check-esx-hardware.py -i esx1.example.local -p geheim --show-inventory
+System Board 71                                    HealthState = 0
+System Board 72                                    HealthState = 0
+Add-in Card 111                                    HealthState = 0
+Add-in Card 112                                    HealthState = 0
+Add-in Card 113                                    HealthState = 0
+Hardware Management Controller (Node 0)            HealthState = 0
+Processor 1 Temp                                   HealthState = 5
+System Board 1 Pwr Consumption                     HealthState = 5
+Power Supply 2 Voltage 2                           HealthState = 5
+Power Supply 1 Voltage 1                           HealthState = 5
+Power Supply 2 Current 2                           HealthState = 5
+Power Supply 1 Current 1                           HealthState = 5
+System Board 1 Sys Fan1 RPM                        HealthState = 5</pre>
+<p>Geben Sie im Skript einen User und ein Passwort an, welchen Sie vorher per vSphere-Client auf dem ESX-Server eingerichtet haben. 
+Die Nummern des HealthStates bedeuten
+</p>
+<table>
+<tbody><tr>
+<td><b>Nummer</b></td>
+<td><b>Bewertung</b></td>
+<td><b>Hinweis</b>
+</td></tr>
+<tr>
+<td>0</td>
+<td> OK		</td>
+<td> Unknown
+</td></tr>
+<tr>
+<td>5</td>
+<td> OK		</td>
+<td> OK
+</td></tr>
+<tr>
+<td>10 </td>
+<td> Warning	</td>
+<td> Degraded
+</td></tr>
+<tr>
+<td>15 </td>
+<td> Warning	</td>
+<td> Minor
+</td></tr>
+<tr>
+<td>20 </td>
+<td> Critical	</td>
+<td> Major
+</td></tr>
+<tr>
+<td>25 </td>
+<td> Critical	</td>
+<td> Critical
+</td></tr>
+<tr>
+<td>30 </td>
+<td> Critical	</td>
+<td> Non-recoverable Error
+</td></tr></tbody></table>
+<h2><span class="mw-headline" id="ESX-Hardware.C3.BCberwachung_in_Zabbix_einrichten">ESX-Hardwareüberwachung in Zabbix einrichten</span></h2>
+<h3><span class="mw-headline" id="Discovery-Regel_einrichten">Discovery-Regel einrichten</span></h3>
+<p>Wenn Sie auf der Kommandozeile erfolgreich die CIM-API Ihres ESX- oder ESXi-Servers abfragen konnten, richten Sie nun die Items im Zabbix-Server ein. Dazu nutzen Sie die Funktion <a href="http://lab4.org/wiki/Zabbix_effizientes_Arbeiten_mit_Templates" title="Zabbix effizientes Arbeiten mit Templates">Low-Level-Discovery</a> und Zabbix-Sender.
+</p><p>Wenn Sie das Skript mit der Option <tt>-d</tt> oder <tt>--item-discovery</tt> aufrufen, wird eine json-kodierte Liste der im ESX-Server erkannten Hardware erzeugt. Mit dieser Liste generiert der Zabbix-Server automatisch einzelne Items für jede Hardwarekomponente. (Die Liste im nachfolgenden Beispiel wurde gekürzt und leserlich formatiert.)
+</p>
+<pre>./check-esx-hardware.py -i esx1.example.com -p geheim --item-discovery
+vmware.hardwareitems {
+    "data": [{
+        "{#ITEM_KEY}": "SystemBoard71",
+        "{#ITEM_NAME}": "System Board 71"
+    }, {
+        "{#ITEM_KEY}": "SystemBoard72",
+        "{#ITEM_NAME}": "System Board 72"
+    }, {
+        "{#ITEM_KEY}": "Add-inCard111",
+        "{#ITEM_NAME}": "Add-in Card 111"
+    }, {
+        "{#ITEM_KEY}": "Add-inCard112",
+        "{#ITEM_NAME}": "Add-in Card 112"
+    }, {
+        "{#ITEM_KEY}": "Add-inCard113",
+        "{#ITEM_NAME}": "Add-in Card 113"
+    }, {
+        "{#ITEM_KEY}": "HardwareManagementController(Node0)",
+        "{#ITEM_NAME}": "Hardware Management Controller (Node 0)"
+    }, {
+        "{#ITEM_KEY}": "Processor1Temp",
+        "{#ITEM_NAME}": "Processor 1 Temp"
+    }, {
+        "{#ITEM_KEY}": "SystemBoard1PwrConsumption",
+        "{#ITEM_NAME}": "System Board 1 Pwr Consumption"
+    }, {
+        "{#ITEM_KEY}": "PowerSupply2Voltage2",
+        "{#ITEM_NAME}": "Power Supply 2 Voltage 2"
+    }]
+}</pre>
+<p>Legen Sie ein neues Template mit dem Namen „VMware Hardware Health“ an. Klicken Sie anschließend in der Zeile des neuen Templates auf den Link <b>Discovery</b> und legen Sie mit der Schaltfläche „Create Discovery Rule“ eine neue Regel mit folgenden Daten an:
+</p>
+<table>
+
+<tbody><tr>
+<td> Name </td>
+<td> Hardware-Items
+</td></tr>
+<tr>
+<td> Type </td>
+<td> Zabbix trapper
+</td></tr>
+<tr>
+<td> Key </td>
+<td> vmware.hardwareitems
+</td></tr>
+<tr>
+<td> Keep lost resources period (in days) </td>
+<td> 30
+</td></tr></tbody></table>
+<div class="center"><div class="thumb tnone"><div class="thumbinner" style="width:593px;"><a href="http://lab4.org/wiki/Datei:Vmware-hardware-discovery.png" class="image"><img alt="" src="./Zabbix ESX-Server per Common Information Model CIM ueberwachen – freie Dokumentation_files/Vmware-hardware-discovery.png" width="591" height="289" class="thumbimage"></a>  <div class="thumbcaption">Discovery-Regeln zum Anlegen einzelner Items pro Hardwarekomponente</div></div></div></div>
+<h3><span class="mw-headline" id="Item-Prototypen_einrichten">Item-Prototypen einrichten</span></h3>
+<p>Nachdem Sie die Discovery-Regel angelegt haben, richten Sie einen „Item Prototype“ mit folgenden Daten ein:
+</p>
+<table>
+
+<tbody><tr>
+<td> Name </td>
+<td> Health state of {#ITEM_NAME}
+</td></tr>
+<tr>
+<td> Type </td>
+<td> Zabbix trapper
+</td></tr>
+<tr>
+<td> Key </td>
+<td> vmware.hardwarehealthstate['{#ITEM_KEY}']
+</td></tr>
+<tr>
+<td> Type of Information </td>
+<td> Numeric (unsigned)
+</td></tr>
+<tr>
+<td> Data type </td>
+<td> Decimal
+</td></tr></tbody></table>
+<div class="center"><div class="thumb tnone"><div class="thumbinner" style="width:593px;"><a href="http://lab4.org/wiki/Datei:Vmware-hardware-prototype.png" class="image"><img alt="" src="./Zabbix ESX-Server per Common Information Model CIM ueberwachen – freie Dokumentation_files/Vmware-hardware-prototype.png" width="591" height="450" class="thumbimage"></a>  <div class="thumbcaption">Item-Prototyp für die VMwarehardwareüberwachung</div></div></div></div>
+<p>Sobald Sie das Template einem Host zugewiesen haben, können Sie die Konfiguration testen. Dazu loggen Sie sich per SSH auf dem Zabbix-Server ein und rufen das zuvor beschriebene Skript wie folgt auf:
+</p>
+<pre>./check-esx-hardware.py -i esx1.example.com -p geheim -d|zabbix_sender -z 127.0.0.1 -i - -vvv
+</pre>
+<p>Das Skript baut über das CIM-Interface eine Verbindung zum ESX-Server auf, ruft alle Hardware-Items ab, generiert eine json-kodierte Liste und sendet diese per Zabbix-Sender an den Zabbix-Server. 
+Sollte der Host in Zabbix einen abweichenden Namen haben, können Sie diesen mit der Option <tt>--zabbix-hostname "Mein ESX Server"</tt> angeben.
+Sobald das Skript seine Arbeit ausgeführt hat, sollten Sie zahlreiche neue Items für den Host sehen. Klicken Sie auf <i>Configuration|Hosts</i> und in der Zeile des entsprechenden Hosts auf den Link <i>Items</i>.<br>
+In der Liste erkennen Sie die von der Discovery-Regel automatisch angelegten Items an dem vorangestellten Namen der Regel, in diesem Beispiel „Hardware Items:“.
+</p>
+<div class="center"><div class="thumb tnone"><div class="thumbinner" style="width:953px;"><a href="http://lab4.org/wiki/Datei:Generated-esx-items.png" class="image"><img alt="" src="./Zabbix ESX-Server per Common Information Model CIM ueberwachen – freie Dokumentation_files/Generated-esx-items.png" width="951" height="493" class="thumbimage"></a>  <div class="thumbcaption">Das Skript hat per Zabbix-Sender neue Items angelegt.</div></div></div></div>
+<p><b>Heartbeat:</b><br>
+Das Skript <tt>check-esx-hardware.py</tt> gibt bei jedem Aufruf ein Item mit dem Key <tt>vmware.hardwarehealthstate[heartbeat]</tt> aus. Richten Sie im Template „VMware Hardware Health“ ein „normales“ Item vom Typ „Zabbix-Trapper“ ein, das mit jedem Lauf des Skriptes aktualisiert wird. Per Trigger prüfen Sie später, ob das Skript regelmäßig Daten liefert.
+</p>
+<h3><span class="mw-headline" id="Cronjob_einrichten">Cronjob einrichten</span></h3>
+<p>Wenn die ersten Tests auf der Kommandozeile erfolgreich waren und wenn der Zustand der Hardware im ESX-Server in den einzelnen Items aktualisiert wird, sollten Sie einen Cronjob einrichten, der das Skript regelmäßig aufruft. Nutzen Sie entweder das Kommando <tt>crontab</tt> oder legen Sie eine Datei in <tt>/etc/cron.d/</tt> an, die beispielsweise wie folgt aussehen könnte:
+</p>
+<pre>*/30 * * * *  root  /usr/lib/zabbix/cron/check-esx-hardware.py\
+ -i esx1.example.com -p geheim -d -x|\
+ zabbix_sender -z 127.0.0.1 -i -</pre>
+<h3><span class="mw-headline" id="Trigger-Prototypen_einrichten">Trigger-Prototypen einrichten</span></h3>
+<p>Wenn das Anlegen der Items per Low-Level-Discovery erfolgreich war, sollten Sie als letzten Schritt einen Trigger einrichten.
+Wählen Sie erneut über <i>Configuration|Templates</i> das Template „VMware Health State“ aus und klicken Sie auf den Link „Discovery“. Legen Sie nun über den Link „Trigger Prototype“ einen neuen Trigger-Prototypen an. Der ESX-Server kennzeichnet defekte Hardware mit den Status 0 oder 5. Legen Sie den Trigger-Prototypen mit folgenden Werten an:
+Name:
+</p>
+<pre>Hardware Failure on {#ITEM_NAME}
+</pre>
+<p>Expression (ohne Zeilenumbruch):
+</p>
+<pre>{VMware Hardware Health:vmware.hardwarehealthstate['{#ITEM_KEY}'].last()}&lt;&gt;5 and
+{VMware Hardware Health:vmware.hardwarehealthstate['{#ITEM_KEY}'].last()}&lt;&gt;0
+</pre>
+<div class="center"><div class="thumb tnone"><div class="thumbinner" style="width:578px;"><a href="http://lab4.org/wiki/Datei:Esx-trigger-prototype.png" class="image"><img alt="" src="./Zabbix ESX-Server per Common Information Model CIM ueberwachen – freie Dokumentation_files/Esx-trigger-prototype.png" width="576" height="497" class="thumbimage"></a>  <div class="thumbcaption">Trigger-Prototyp, der defekte Hardware in ESX-Servern erkennt</div></div></div></div>
+<p><b>Heartbeat:</b><br>
+Berücksichtigen Sie auch den Fall, dass das Python-Skript keine Daten mehr liefert. Richten Sie im Template „VMware Health State“ einen Trigger ein, welcher auslöst, wenn der Zabbix-Server keine Daten vom Skript erhält. Verwenden Sie dazu die Expression <tt>nodata()</tt>, zum Beispiel <tt>{VMware Hardware Health:vmware.hardwarehealthstate[heartbeat].nodata(1800)}=1</tt>.
+</p>
+<!-- 
+NewPP limit report
+CPU time usage: 0.032 seconds
+Real time usage: 0.035 seconds
+Preprocessor visited node count: 92/1000000
+Preprocessor generated node count: 176/1000000
+Post‐expand include size: 885/2097152 bytes
+Template argument size: 811/2097152 bytes
+Highest expansion depth: 2/40
+Expensive parser function count: 0/100
+-->
+
+<!-- Saved in parser cache with key wikidb:pcache:idhash:117-0!*!0!!de!5!* and timestamp 20160412170117 and revision id 5259
+ -->
+</div><div class="printfooter">
+Von „<a dir="ltr" href="http://lab4.org/mediawiki/index.php?title=Zabbix_ESX-Server_per_Common_Information_Model_CIM_ueberwachen&amp;oldid=5259">http://lab4.org/mediawiki/index.php?title=Zabbix_ESX-Server_per_Common_Information_Model_CIM_ueberwachen&amp;oldid=5259</a>“</div>
+				<!-- dataAfterContent -->
+								<!-- END dataAfterContent -->
+			</div>
+
+			<div id="footer">
+				<!--
+				<p>Diese Seite wurde bisher 15.832 mal abgerufen.</p><p>Diese Seite wurde zuletzt am 12. April 2016 um 16:41 Uhr von <a href="/wiki/Benutzer:Thorstenkramm" title="Benutzer:Thorstenkramm">Thorsten Kramm</a> geändert.</p><ul><li><a href="/wiki/freie_Dokumentation:Datenschutz" title="freie Dokumentation:Datenschutz">Datenschutz</a></li><li><a href="/wiki/freie_Dokumentation:%C3%9Cber_freie_Dokumentation" title="freie Dokumentation:Über freie Dokumentation">Über freie Dokumentation</a></li><li><a href="/wiki/freie_Dokumentation:Impressum" title="freie Dokumentation:Impressum">Impressum</a></li></ul>				-->
+			</div>
+
+			<div id="catlinks" class="catlinks"><div id="mw-normal-catlinks" class="mw-normal-catlinks"><a href="http://lab4.org/wiki/Spezial:Kategorien" title="Spezial:Kategorien">Kategorie</a>: <ul><li><a href="http://lab4.org/wiki/Kategorie:Zabbix" title="Kategorie:Zabbix">Zabbix</a></li></ul></div></div>		</div>
+
+		<div id="bottom-wrap">
+		<div id="footer-wrap-inner">
+
+		<div id="primary" class="footer">
+			<ul>
+			
+						<li class="widget">
+				<h3>Meine Werkzeuge</h3>
+				<div>
+					<ul>
+					<li id="pt-login"><a href="http://lab4.org/mediawiki/index.php?title=Spezial:Anmelden&amp;returnto=Zabbix+ESX-Server+per+Common+Information+Model+CIM+ueberwachen" title="Sich anzumelden wird zwar gerne gesehen, ist aber keine Pflicht. [alt-shift-o]" accesskey="o">Anmelden</a></li>					</ul>
+				</div>
+			</li>
+			
+			<li class="widget">
+							</li>
+
+			</ul>
+		</div>
+
+		<div id="secondary" class="footer">
+
+			<ul>
+			<!-- Show Toolbox only for loggedin Users -->
+			
+			<li class="widget"><h3>Links</h3><ul>
+<li><a href="http://lin4.de/blog">Blog</a></li>
+<li><a href="https://www.heinlein-support.de/schulung/zabbix">Zabbix Schulungen</a></li>
+</ul></li>
+
+			<li class="widget">
+							</li>
+
+			</ul>
+		</div>
+
+		<div id="ternary" class="footer">
+			<ul>
+
+			<!--
+			<li class="widget">
+				<img id="logo" src="/images/logo.png" alt="" />			</li>
+			-->
+			<li class="widget">
+			<h3>Informationen</h3>
+			<p>Diese Seite wurde bisher 15.832 mal abgerufen.</p><p>Diese Seite wurde zuletzt am 12. April 2016 um 16:41 Uhr von <a href="http://lab4.org/wiki/Benutzer:Thorstenkramm" title="Benutzer:Thorstenkramm">Thorsten Kramm</a> geändert.</p><ul><li><a href="http://lab4.org/wiki/freie_Dokumentation:Datenschutz" title="freie Dokumentation:Datenschutz">Datenschutz</a></li><li><a href="http://lab4.org/wiki/freie_Dokumentation:%C3%9Cber_freie_Dokumentation" title="freie Dokumentation:Über freie Dokumentation">Über freie Dokumentation</a></li><li><a href="http://lab4.org/wiki/freie_Dokumentation:Impressum" title="freie Dokumentation:Impressum">Impressum</a></li></ul>			</li>
+			<li class="widget">
+							</li>
+
+			</ul>
+		</div>
+		<div style="clear: both"></div>
+
+		</div>
+		</div>
+
+		<script>/*<![CDATA[*/window.jQuery && jQuery.ready();/*]]>*/</script><script>if(window.mw){
+mw.loader.state({"site":"ready","user":"ready","user.groups":"ready"});
+}</script>
+<script>if(window.mw){
+mw.loader.load(["mediawiki.toc","mediawiki.action.view.postEdit","mediawiki.user","mediawiki.hidpi","mediawiki.page.ready","mediawiki.searchSuggest"],null,true);
+}</script>
+<script>if(window.mw){
+mw.config.set({"wgBackendResponseTime":100});
+}</script>		<!-- Start p_i_w_i_k -->
+                <script type="text/javascript">
+                var pkBaseURL = (("https:" == document.location.protocol) ? "https://a.lab4.org/" : "http://a.lab4.org/");
+                document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+                </script><script src="./Zabbix ESX-Server per Common Information Model CIM ueberwachen – freie Dokumentation_files/piwik.js.Download" type="text/javascript"></script><script type="text/javascript">
+                try {
+                var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 1);
+                piwikTracker.trackPageView();
+                piwikTracker.enableLinkTracking();
+                } catch( err ) {}
+                </script><noscript>&lt;p&gt;&lt;img src="http://a.lab4.org/piwik.php?idsite=1" style="border:0" alt="" /&gt;&lt;/p&gt;</noscript>
+                <!-- End p_i_w_i_k -->
+		
+		<!-- Cached 20160412170117 -->
+
+		</body></html>

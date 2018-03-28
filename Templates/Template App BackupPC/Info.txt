@@ -1,0 +1,6 @@
+Install
+Add a line from 'sudo' file to your sudo config
+copy 'zabbix-backuppc.pl' and 'zabbix-discover-backuppc.pl' to '/usr/local/bin'
+make it executable with backuppc user
+You need to have 'EnableRemoteCommands=1' in Zabbix agent config
+Import 'backuppc_zbx_export_templates.xml' into Zabbix and configure it
