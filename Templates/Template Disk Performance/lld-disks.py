@@ -5,7 +5,7 @@ import json
 if __name__ == "__main__":
     # Iterate over all block devices, but ignore them if they are in the
     # skippable set
-    skippable = ("sr", "loop", "ram")
+    skippable = ("sr", "loop", "ram", "1" , "2" , "3" , "4" , "5" , "6" , "7" , "8" , "9" , "0" )
     devices = (device for device in os.listdir("/sys/class/block")
                if not any(ignore in device for ignore in skippable))
     data = [{"{#DEVICENAME}": device} for device in devices]
