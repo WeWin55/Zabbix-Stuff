@@ -6,6 +6,7 @@ then
 	then
 
 		mkdir -p /etc/zabbix/zabbix_agentd.d/
+		sed -e '/Include=/ s/^#*/#/' -i $1
 		sed -e '/LogFileSize=0/ s/^#*/#/' -i $1
 		sed -e '/Server=127.0.0.1/ s/^#*/#/' -i $1
 		sed -e '/ServerActive=127.0.0.1/ s/^#*/#/' -i $1
